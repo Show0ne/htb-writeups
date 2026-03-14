@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
 <meta charset="utf-8">
-<title>HackTheBox Writeups</title>
-
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
-<style>
+<title>HackTheBox Writeups</title><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script><link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script><style>
 
 body{
 font-family: Arial, sans-serif;
@@ -110,40 +101,12 @@ color:#aaa;
 margin-bottom:10px;
 }
 
-</style>
-</head>
+</style></head><body><div class="toggle" onclick="toggleTheme()">🌙 Theme</div><div class="layout"><div class="sidebar"><h2>HackTheBox Writeups</h2><div class="stats" id="stats"></div><input class="search" id="search" placeholder="Search machine"><b>Linux Machines</b>
 
-<body>
-
-<div class="toggle" onclick="toggleTheme()">🌙 Theme</div>
-
-<div class="layout">
-
-<div class="sidebar">
-
-<h2>HackTheBox Writeups</h2>
-
-<div class="stats" id="stats"></div>
-
-<input class="search" id="search" placeholder="Search machine">
-
-<b>Linux Machines</b>
-<div id="machines"></div>
-
-</div>
-
-<div class="content">
-
-<div id="viewer" class="viewer">
+<div id="machines"></div></div><div class="content"><div id="viewer" class="viewer">
 <h1>HackTheBox Writeups</h1>
 <p>Select a machine from the sidebar.</p>
-</div>
-
-</div>
-
-</div>
-
-<script>
+</div></div></div><script>
 
 const repo="Show0ne/htb-writeups";
 
@@ -179,7 +142,8 @@ a.onclick=()=>loadMachine(name);
 
 document.getElementById("machines").appendChild(a);
 
-linuxCount++;
+if(path.startsWith("Linux")) linuxCount++;
+if(path.startsWith("Windows")) windowsCount++;
 
 });
 
@@ -264,6 +228,14 @@ document.body.classList.add("dark");
 }
 
 load("Linux/Easy");
+load("Linux/Medium");
+load("Linux/Hard");
+load("Linux/Insane");
+
+load("Windows/Easy");
+load("Windows/Medium");
+load("Windows/Hard");
+load("Windows/Insane");
 
 document.getElementById("search").addEventListener("input",function(){
 
@@ -281,6 +253,5 @@ a.style.display=text.includes(filter)?"block":"none";
 
 loadTheme();
 
-</script>
-</body>
+</script></body>
 </html>
