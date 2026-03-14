@@ -11,12 +11,12 @@
 
 | | |
 |:---|:---|
-| **TARGET IP** | 10.129.3.19 |
-| **DOMAIN** | cap.htb |
-| **OS** | Linux |
-| **SERVICES** | 21/FTP · 22/SSH · 80/HTTP |
-| **DIFFICULTY** | Easy |
-| **TECHNIQUES** | IDOR · FTP Credentials in PCAP · Linux Capabilities (cap_setuid) |
+| **TARGET IP** |　10.129.3.19 |
+| **DOMAIN** |　cap.htb |
+| **OS** |　Linux |
+| **SERVICES** |　21/FTP · 22/SSH · 80/HTTP |
+| **DIFFICULTY** |　Easy |
+| **TECHNIQUES** |　IDOR · FTP Credentials in PCAP · Linux Capabilities (cap_setuid) |
 
 > 🚩 **user.txt** — `aaf24ac79e5aec40014bc6cc47c80639`
 >
