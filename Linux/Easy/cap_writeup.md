@@ -10,7 +10,7 @@
 ---
 
 | | |
-|---|---|
+|:---|:---|
 | **TARGET IP** | 10.129.3.19 |
 | **DOMAIN** | cap.htb |
 | **OS** | Linux |
@@ -18,10 +18,9 @@
 | **DIFFICULTY** | Easy |
 | **TECHNIQUES** | IDOR · FTP Credentials in PCAP · Linux Capabilities (cap_setuid) |
 
-| | |
-|---|---|
-| **user.txt** | `aaf24ac79e5aec40014bc6cc47c80639` |
-| **root.txt** | `43737038fe2d649a4b60fd02cef8449a` |
+> 🚩 **user.txt** — `aaf24ac79e5aec40014bc6cc47c80639`
+>
+> 🚩 **root.txt** — `43737038fe2d649a4b60fd02cef8449a`
 
 ```
 root@cap:~# echo "pwned by Show@Hack4u~" >> /etc/motd
@@ -151,7 +150,7 @@ root@cap:~# cat /root/root.txt
 ## KILL CHAIN COMPLETA
 
 | Paso | Fase | Descripción |
-|------|------|-------------|
+|:----:|:-----|:------------|
 | **01** | RECON | `nmap -p-` descubre FTP/21, SSH/22, HTTP/80. Versiones: vsftpd 3.0.3, OpenSSH 8.2p1, Gunicorn. |
 | **02** | WEB ENUM | Security Dashboard en `/data/`. Se detecta IDOR cambiando el ID a `0`. |
 | **03** | PCAP | Descarga de `0.pcap`. `tshark` extrae credenciales FTP en claro: `nathan` / `Buck3tH4TF0RM3!` |
@@ -163,7 +162,7 @@ root@cap:~# cat /root/root.txt
 ## LECCIONES APRENDIDAS
 
 | Vector | Mitigación |
-|--------|-----------|
+|:-------|:----------|
 | **IDOR** | Nunca confiar en IDs secuenciales del lado del cliente. Implementar controles de acceso por objeto en el servidor. |
 | **FTP CLEARTEXT** | FTP transmite credenciales en texto plano. Usar SFTP o FTPS. Evitar FTP en redes no confiables. |
 | **REUTILIZACIÓN** | Usar contraseñas únicas por servicio. Una credencial comprometida en FTP no debería funcionar en SSH. |
