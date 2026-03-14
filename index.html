@@ -2,7 +2,8 @@
 <head>
 <meta charset="utf-8">
 <title>HackTheBox Writeups</title><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script><link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script><style>
+href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script><style>
 
 body{
 font-family: Arial, sans-serif;
@@ -27,11 +28,6 @@ background:#1e1e1e;
 color:white;
 overflow:auto;
 padding:20px;
-}
-
-.sidebar h3{
-border-bottom:1px solid #333;
-padding-bottom:5px;
 }
 
 .sidebar a{
@@ -71,23 +67,6 @@ padding:12px;
 overflow:auto;
 }
 
-.toc{
-background:#f0f0f0;
-padding:15px;
-margin-bottom:25px;
-border-radius:5px;
-}
-
-.dark .toc{
-background:#222;
-}
-
-.toc a{
-display:block;
-text-decoration:none;
-color:#0366d6;
-}
-
 .toggle{
 position:fixed;
 top:15px;
@@ -106,20 +85,21 @@ color:#aaa;
 margin-bottom:10px;
 }
 
-</style></head><body><div class="toggle" onclick="toggleTheme()">🌙 Theme</div><div class="layout"><div class="sidebar"><h2>HackTheBox Writeups</h2><div class="stats" id="stats"></div><input class="search" id="search" placeholder="Search machine"><h3>Linux</h3>
-<div id="linuxCounter"></div>
-<div id="linux"></div><h3>Windows</h3>
-<div id="windowsCounter"></div>
+.category{
+margin-top:15px;
+font-weight:bold;
+}
+
+</style></head><body><div class="toggle" onclick="toggleTheme()">🌙 Theme</div><div class="layout"><div class="sidebar"><h2>HackTheBox Writeups</h2><div class="stats" id="stats"></div><input class="search" id="search" placeholder="Search machine"><div class="category" id="linuxTitle"></div>
+<div id="linux"></div><div class="category" id="windowsTitle"></div>
 <div id="windows"></div></div><div class="content"><div id="viewer" class="viewer"><h1>HackTheBox Writeups</h1><p>Collection of HackTheBox machine writeups.</p><p>Select a machine from the sidebar.</p></div></div></div><script>
 
 const repo="Show0ne/htb-writeups";
 
-const writeups={};
+const machines={};
 
-const categories={
-linux:[],
-windows:[]
-};
+let linux=[];
+let windows=[];
 
 const paths=[
 ["Linux/Easy","linux"],
@@ -132,26 +112,27 @@ const paths=[
 ["Windows/Insane","windows"]
 ];
 
-async function load(path,cat){
+async function load(path,type){
 
 try{
 
 const url=`https://api.github.com/repos/${repo}/contents/${path}`;
-const response=await fetch(url);
+const res=await fetch(url);
 
-if(response.status!==200) return;
+if(res.status!==200) return;
 
-const files=await response.json();
+const files=await res.json();
 
 files
 .filter(f=>f.name.endsWith("_writeup.md"))
 .forEach(file=>{
 
-const id=file.name.replace("_writeup.md","");
+const name=file.name.replace("_writeup.md","");
 
-writeups[id]=file.download_url;
+machines[name]=file.download_url;
 
-categories[cat].push(id);
+if(type==="linux") linux.push(name);
+if(type==="windows") windows.push(name);
 
 });
 
@@ -164,114 +145,61 @@ updateStats();
 
 function updateSidebar(){
 
-const linuxContainer=document.getElementById("linux");
-const windowsContainer=document.getElementById("windows");
+const linuxDiv=document.getElementById("linux");
+const windowsDiv=document.getElementById("windows");
 
-linuxContainer.innerHTML="";
-windowsContainer.innerHTML="";
+linuxDiv.innerHTML="";
+windowsDiv.innerHTML="";
 
-categories.linux.sort().forEach(id=>{
+linux.sort().forEach(name=>{
 
 const a=document.createElement("a");
-a.textContent=id;
-a.onclick=()=>loadWriteup(id);
+a.textContent=name;
+a.onclick=()=>loadMachine(name);
 
-linuxContainer.appendChild(a);
+linuxDiv.appendChild(a);
 
 });
 
-categories.windows.sort().forEach(id=>{
+windows.sort().forEach(name=>{
 
 const a=document.createElement("a");
-a.textContent=id;
-a.onclick=()=>loadWriteup(id);
+a.textContent=name;
+a.onclick=()=>loadMachine(name);
 
-windowsContainer.appendChild(a);
+windowsDiv.appendChild(a);
 
 });
 
-document.getElementById("linuxCounter").textContent=
-"Linux ("+categories.linux.length+")";
-
-document.getElementById("windowsCounter").textContent=
-"Windows ("+categories.windows.length+")";
+document.getElementById("linuxTitle").textContent=`Linux (${linux.length})`;
+document.getElementById("windowsTitle").textContent=`Windows (${windows.length})`;
 
 }
 
 function updateStats(){
 
 document.getElementById("stats").textContent=
-Object.keys(writeups).length+" writeups in archive";
+Object.keys(machines).length+" writeups in archive";
 
 }
 
-async function loadWriteup(id){
+async function loadMachine(name){
 
-location.hash="writeup/"+id;
-
-const raw=await fetch(writeups[id]);
+const raw=await fetch(machines[name]);
 const md=await raw.text();
 
 document.getElementById("viewer").innerHTML=
 marked.parse(md);
 
-generateTOC();
-
-document.querySelectorAll("pre code").forEach((block)=>{
+document.querySelectorAll("pre code").forEach(block=>{
 hljs.highlightElement(block);
 });
-
-window.scrollTo(0,0);
-
-}
-
-function generateTOC(){
-
-const viewer=document.getElementById("viewer");
-
-const headers=viewer.querySelectorAll("h1,h2,h3");
-
-if(headers.length===0) return;
-
-let toc='<div class="toc"><b>Table of Contents</b>';
-
-headers.forEach((h,i)=>{
-
-const id="section_"+i;
-
-h.id=id;
-
-toc+=`<a href="#${id}">${h.innerText}</a>`;
-
-});
-
-toc+='</div>';
-
-viewer.insertAdjacentHTML("afterbegin",toc);
 
 }
 
 function toggleTheme(){
 
 document.body.classList.toggle("dark");
-
-localStorage.setItem("theme",
-document.body.classList.contains("dark")?"dark":"light");
-
-}
-
-function loadTheme(){
-
-const saved=localStorage.getItem("theme");
-
-if(saved==="dark"){
-document.body.classList.add("dark");
-return;
-}
-
-if(!saved && window.matchMedia("(prefers-color-scheme: dark)").matches){
-document.body.classList.add("dark");
-}
 
 }
 
@@ -283,15 +211,14 @@ const filter=this.value.toLowerCase();
 
 document.querySelectorAll(".sidebar a").forEach(a=>{
 
-const text=a.textContent.toLowerCase();
-
-a.style.display=text.includes(filter)?"block":"none";
+a.style.display=
+a.textContent.toLowerCase().includes(filter)
+? "block"
+: "none";
 
 });
 
 });
-
-loadTheme();
 
 </script></body>
 </html>
