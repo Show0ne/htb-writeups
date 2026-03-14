@@ -1,16 +1,21 @@
-# HTB Writeups — Show@Hack4u~
+# HackTheBox Writeups
 
-Colección personal de writeups de HackTheBox.
-Organizado por OS y dificultad.
+## Repository Structure
+```
+.
+├── Linux
+│   ├── Easy
+│   │   ├── cap_writeup.md
+│   │   └── cap_writeup.pdf
+│   ├── Hard
+│   ├── Insane
+│   └── Medium
+├── README.md
+└── Windows
+    ├── Easy
+    ├── Hard
+    ├── Insane
+    └── Medium
 
-## Writeups de máquinas activas
-
-Los PDFs están protegidos con contraseña derivada de la root flag:
-
-echo -n "<root_flag>" | sha256sum | awk '{print $1}'
-
-## Disclaimer
-
-Solo se publican abiertamente cuando la máquina está retired.
-
-Show@Hack4u~
+11 directories, 3 files
+```
