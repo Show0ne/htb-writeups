@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>HTB Writeups</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    margin:40px;
+    transition:0.3s;
+}
+
+.dark{
+    background:#0d1117;
+    color:#e6edf3;
+}
+
+.light{
+    background:#ffffff;
+    color:#000;
+}
+
+h1{
+    margin-bottom:10px;
+}
+
+input{
+    padding:8px;
+    width:300px;
+    margin-bottom:20px;
+}
+
+button{
+    padding:6px 10px;
+    cursor:pointer;
+}
+
+ul{
+    list-style:none;
+    padding-left:20px;
+}
+
+.machine{
+    margin:4px 0;
+}
+
+a{
+    text-decoration:none;
+}
+
+.dark a{color:#58a6ff;}
+.light a{color:#0969da;}
+
+</style>
+
+</head>
+
+<body class="dark">
+
+<h1>HackTheBox Writeups</h1>
+
+<button onclick="toggleTheme()">Toggle Theme</button>
+
+<br><br>
+
+<input type="text" id="search" placeholder="Search machine..." onkeyup="searchMachines()">
+
+<h2>Linux (1)</h2>
+
+<ul>
+
+<li>Easy (1)
+    <ul>
+        <li class="machine">
+            <a href="Linux/Easy/cap_writeup.md">Cap</a>
+        </li>
+    </ul>
+</li>
+
+<li>Medium (0)</li>
+<li>Hard (0)</li>
+<li>Insane (0)</li>
+
+</ul>
+
+<h2>Windows (0)</h2>
+
+<ul>
+<li>Easy (0)</li>
+<li>Medium (0)</li>
+<li>Hard (0)</li>
+<li>Insane (0)</li>
+</ul>
+
+<script>
+
+function searchMachines(){
+    let input=document.getElementById("search").value.toLowerCase();
+    let machines=document.getElementsByClassName("machine");
+
+    for(let i=0;i<machines.length;i++){
+        let txt=machines[i].innerText.toLowerCase();
+
+        if(txt.includes(input))
+            machines[i].style.display="";
+        else
+            machines[i].style.display="none";
+    }
+}
+
+function toggleTheme(){
+    let body=document.body;
+
+    if(body.classList.contains("dark")){
+        body.classList.remove("dark");
+        body.classList.add("light");
+    }else{
+        body.classList.remove("light");
+        body.classList.add("dark");
+    }
+}
+
+</script>
+
+</body>
+</html>
