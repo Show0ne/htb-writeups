@@ -2,8 +2,7 @@
 <head>
 <meta charset="utf-8">
 <title>HackTheBox Writeups</title><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script><link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script><style>
+href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script><style>
 
 body{
 font-family:Arial, sans-serif;
@@ -49,14 +48,14 @@ font-weight:bold;
 }
 
 .subcategory{
-margin-left:12px;
+margin-left:10px;
 margin-top:6px;
 font-weight:bold;
 color:#ccc;
 }
 
 .machine{
-margin-left:25px;
+margin-left:10px;
 }
 
 .search{
@@ -82,7 +81,19 @@ color:#aaa;
 margin-bottom:10px;
 }
 
-</style></head><body><div class="layout"><div class="sidebar"><h2>HackTheBox Writeups</h2><div class="stats" id="stats"></div><input class="search" id="search" placeholder="Search machine"><div id="linux"></div>
+.toggle{
+position:fixed;
+top:15px;
+right:20px;
+padding:6px 10px;
+cursor:pointer;
+background:#444;
+color:white;
+border-radius:4px;
+font-size:18px;
+}
+
+</style></head><body><div class="toggle" onclick="toggleTheme()" id="themeToggle">🌙</div><div class="layout"><div class="sidebar"><h2>HackTheBox Writeups</h2><div class="stats" id="stats"></div><input class="search" id="search" placeholder="Search machine"><div id="linux"></div>
 <div id="windows"></div></div><div class="content"><div id="viewer"><h1>HackTheBox Writeups</h1>
 <p>Select a machine from the sidebar.</p></div></div></div><script>
 
@@ -102,7 +113,6 @@ async function loadCategory(os,difficulty){
 try{
 
 const path=`${os}/${difficulty}`;
-
 const url=`https://api.github.com/repos/${repo}/contents/${path}`;
 
 const res=await fetch(url);
@@ -138,7 +148,6 @@ function renderSidebar(){
 ["Linux","Windows"].forEach(os=>{
 
 const container=document.getElementById(os.toLowerCase());
-
 container.innerHTML="";
 
 let total=0;
@@ -205,6 +214,36 @@ hljs.highlightElement(block);
 
 }
 
+function toggleTheme(){
+
+document.body.classList.toggle("dark");
+
+const icon=document.getElementById("themeToggle");
+
+if(document.body.classList.contains("dark")){
+icon.textContent="☀️";
+localStorage.setItem("theme","dark");
+}else{
+icon.textContent="🌙";
+localStorage.setItem("theme","light");
+}
+
+}
+
+function loadTheme(){
+
+const saved=localStorage.getItem("theme");
+const icon=document.getElementById("themeToggle");
+
+if(saved==="dark"){
+document.body.classList.add("dark");
+icon.textContent="☀️";
+}else{
+icon.textContent="🌙";
+}
+
+}
+
 ["Linux","Windows"].forEach(os=>{
 difficulties.forEach(diff=>{
 loadCategory(os,diff);
@@ -224,6 +263,8 @@ a.textContent.toLowerCase().includes(filter)
 });
 
 });
+
+loadTheme();
 
 </script></body>
 </html>
