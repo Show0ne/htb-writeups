@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <meta charset="utf-8">
-<title>HTB Writeups</title>
+<title>HackTheBox Writeups</title>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
 <style>
 
 body{
+font-family: Arial, sans-serif;
 margin:0;
-font-family:Arial;
 background:#f4f4f4;
 color:#111;
-transition:0.3s;
 }
 
 .dark{
 background:#121212;
 color:#ddd;
-}
-
-.light{
-background:#f4f4f4;
-color:#111;
 }
 
 .layout{
@@ -32,48 +32,36 @@ height:100vh;
 }
 
 .sidebar{
-width:320px;
+width:350px;
 background:#1e1e1e;
 color:white;
 overflow:auto;
 padding:20px;
 }
 
-.light .sidebar{
-background:#eeeeee;
-color:#111;
+.sidebar h3{
+border-bottom:1px solid #333;
+padding-bottom:5px;
 }
 
 .sidebar a{
 display:block;
 color:#9cdcfe;
+text-decoration:none;
 padding:3px 0;
 cursor:pointer;
-text-decoration:none;
 font-size:14px;
-}
-
-.light .sidebar a{
-color:#0066cc;
 }
 
 .sidebar a:hover{
 text-decoration:underline;
 }
 
-.section{
-margin-top:15px;
-font-weight:bold;
-}
-
-.machine{
-margin-left:10px;
-}
-
 .search{
 width:100%;
 padding:8px;
-margin-bottom:10px;
+margin-bottom:15px;
+font-size:14px;
 }
 
 .content{
@@ -87,24 +75,54 @@ background:white;
 background:#1a1a1a;
 }
 
+.viewer pre{
+background:#111;
+padding:12px;
+overflow:auto;
+}
+
+.toc{
+background:#f0f0f0;
+padding:15px;
+margin-bottom:25px;
+border-radius:5px;
+}
+
+.dark .toc{
+background:#222;
+}
+
+.toc a{
+display:block;
+text-decoration:none;
+color:#0366d6;
+}
+
 .toggle{
 position:fixed;
 top:15px;
 right:20px;
+padding:6px 10px;
+cursor:pointer;
 background:#444;
 color:white;
-padding:6px 10px;
 border-radius:4px;
-cursor:pointer;
+font-size:13px;
+}
+
+.stats{
+font-size:13px;
+color:#aaa;
+margin-bottom:10px;
 }
 
 </style>
 
 </head>
 
-<body class="dark">
+<body>
 
-<div class="toggle" onclick="toggleTheme()">Theme</div>
+<div class="toggle" onclick="toggleTheme()">🌙 Theme</div>
 
 <div class="layout">
 
@@ -112,15 +130,21 @@ cursor:pointer;
 
 <h2>HTB Writeups</h2>
 
+<div class="stats" id="stats"></div>
+
 <input class="search" id="search" placeholder="Search machine">
 
-<div id="sidebar"></div>
+<h3>Linux</h3>
+<div id="linux"></div>
+
+<h3>Windows</h3>
+<div id="windows"></div>
 
 </div>
 
 <div class="content">
 
-<div id="viewer">
+<div id="viewer" class="viewer">
 <h1>HackTheBox Writeups</h1>
 <p>Select a machine from the sidebar.</p>
 </div>
@@ -133,50 +157,31 @@ cursor:pointer;
 
 const repo="Show0ne/htb-writeups";
 
-const osList=["Linux","Windows"];
 const difficulties=["Easy","Medium","Hard","Insane"];
 
 const machines={};
 
-async function loadMachines(){
-
-const sidebar=document.getElementById("sidebar");
-
-for(const os of osList){
-
-const osTitle=document.createElement("div");
-osTitle.className="section";
-osTitle.textContent=os;
-
-sidebar.appendChild(osTitle);
-
-for(const diff of difficulties){
-
-const path=`${os}/${diff}`;
-
-try{
+async function load(path,container){
 
 const url=`https://api.github.com/repos/${repo}/contents/${path}`;
 
 const response=await fetch(url);
 
-if(response.status!==200) continue;
+if(response.status!==200) return;
 
 const files=await response.json();
 
-const writeups=files.filter(f=>f.name.endsWith("_writeup.md"));
+const sidebar=document.getElementById(container);
 
-if(writeups.length===0) continue;
+const title=document.createElement("div");
+title.style.fontWeight="bold";
+title.style.marginTop="5px";
+title.textContent=path.split("/")[1];
 
-const diffTitle=document.createElement("div");
+sidebar.appendChild(title);
 
-diffTitle.className="machine";
-diffTitle.style.fontWeight="bold";
-diffTitle.textContent=diff;
-
-sidebar.appendChild(diffTitle);
-
-writeups
+files
+.filter(f=>f.name.endsWith("_writeup.md"))
 .sort((a,b)=>a.name.localeCompare(b.name))
 .forEach(file=>{
 
@@ -186,8 +191,6 @@ machines[id]=file.download_url;
 
 const a=document.createElement("a");
 
-a.className="machine";
-
 a.textContent=id;
 
 a.onclick=()=>loadMachine(id);
@@ -195,12 +198,6 @@ a.onclick=()=>loadMachine(id);
 sidebar.appendChild(a);
 
 });
-
-}catch(e){}
-
-}
-
-}
 
 }
 
@@ -210,20 +207,18 @@ const raw=await fetch(machines[id]);
 
 const md=await raw.text();
 
-document.getElementById("viewer").innerHTML=marked.parse(md);
+const html=marked.parse(md);
+
+document.getElementById("viewer").innerHTML=html;
+
+document.querySelectorAll("pre code").forEach(el=>{
+hljs.highlightElement(el);
+});
 
 }
 
 function toggleTheme(){
-
-if(document.body.classList.contains("dark")){
-document.body.classList.remove("dark");
-document.body.classList.add("light");
-}else{
-document.body.classList.remove("light");
-document.body.classList.add("dark");
-}
-
+document.body.classList.toggle("dark");
 }
 
 document.getElementById("search").addEventListener("input",function(){
@@ -240,7 +235,10 @@ a.style.display=text.includes(filter)?"block":"none";
 
 });
 
-loadMachines();
+difficulties.forEach(d=>{
+load(`Linux/${d}`,"linux");
+load(`Windows/${d}`,"windows");
+});
 
 </script>
 
