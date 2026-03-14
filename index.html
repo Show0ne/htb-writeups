@@ -107,47 +107,100 @@ margin-bottom:10px;
 }
 
 </style></head><body><div class="toggle" onclick="toggleTheme()">🌙 Theme</div><div class="layout"><div class="sidebar"><h2>HackTheBox Writeups</h2><div class="stats" id="stats"></div><input class="search" id="search" placeholder="Search machine"><h3>Linux</h3>
+<div id="linuxCounter"></div>
 <div id="linux"></div><h3>Windows</h3>
+<div id="windowsCounter"></div>
 <div id="windows"></div></div><div class="content"><div id="viewer" class="viewer"><h1>HackTheBox Writeups</h1><p>Collection of HackTheBox machine writeups.</p><p>Select a machine from the sidebar.</p></div></div></div><script>
 
 const repo="Show0ne/htb-writeups";
 
 const writeups={};
 
-async function load(path,container){
+const categories={
+linux:[],
+windows:[]
+};
+
+const paths=[
+["Linux/Easy","linux"],
+["Linux/Medium","linux"],
+["Linux/Hard","linux"],
+["Linux/Insane","linux"],
+["Windows/Easy","windows"],
+["Windows/Medium","windows"],
+["Windows/Hard","windows"],
+["Windows/Insane","windows"]
+];
+
+async function load(path,cat){
+
+try{
 
 const url=`https://api.github.com/repos/${repo}/contents/${path}`;
 const response=await fetch(url);
-const files=await response.json();
 
-const sidebar=document.getElementById(container);
+if(response.status!==200) return;
+
+const files=await response.json();
 
 files
 .filter(f=>f.name.endsWith("_writeup.md"))
-.sort((a,b)=>a.name.localeCompare(b.name))
 .forEach(file=>{
 
 const id=file.name.replace("_writeup.md","");
 
 writeups[id]=file.download_url;
 
-const a=document.createElement("a");
-
-a.textContent=id;
-
-a.onclick=()=>loadWriteup(id);
-
-sidebar.appendChild(a);
+categories[cat].push(id);
 
 });
 
+updateSidebar();
 updateStats();
+
+}catch(e){}
+
+}
+
+function updateSidebar(){
+
+const linuxContainer=document.getElementById("linux");
+const windowsContainer=document.getElementById("windows");
+
+linuxContainer.innerHTML="";
+windowsContainer.innerHTML="";
+
+categories.linux.sort().forEach(id=>{
+
+const a=document.createElement("a");
+a.textContent=id;
+a.onclick=()=>loadWriteup(id);
+
+linuxContainer.appendChild(a);
+
+});
+
+categories.windows.sort().forEach(id=>{
+
+const a=document.createElement("a");
+a.textContent=id;
+a.onclick=()=>loadWriteup(id);
+
+windowsContainer.appendChild(a);
+
+});
+
+document.getElementById("linuxCounter").textContent=
+"Linux ("+categories.linux.length+")";
+
+document.getElementById("windowsCounter").textContent=
+"Windows ("+categories.windows.length+")";
 
 }
 
 function updateStats(){
 
-document.getElementById("stats").textContent =
+document.getElementById("stats").textContent=
 Object.keys(writeups).length+" writeups in archive";
 
 }
@@ -159,7 +212,7 @@ location.hash="writeup/"+id;
 const raw=await fetch(writeups[id]);
 const md=await raw.text();
 
-document.getElementById("viewer").innerHTML =
+document.getElementById("viewer").innerHTML=
 marked.parse(md);
 
 generateTOC();
@@ -222,8 +275,7 @@ document.body.classList.add("dark");
 
 }
 
-load("Linux/Easy","linux");
-load("Windows/Easy","windows");
+paths.forEach(p=>load(p[0],p[1]));
 
 document.getElementById("search").addEventListener("input",function(){
 
