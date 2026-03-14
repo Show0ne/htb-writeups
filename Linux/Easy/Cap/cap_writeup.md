@@ -1,23 +1,24 @@
 # Cap
 
-HackTheBox · Season I · Linux · Easy  
-by Show@Hack4u~
+HackTheBox · Season I · Linux · Easy -  by Show@Hack4u~
 
 ![Cap HTB Cover](cap_card_clean.png)
 
-| Campo             | Valor                                                            |
-|:------------------|:-----------------------------------------------------------------|
-| TARGET IP         | 10.129.3.19                                                      |
-| DOMAIN            | cap.htb                                                          |
-| OS                | Linux                                                            |
-| SERVICES          | 21/FTP · 22/SSH · 80/HTTP                                        |
-| DIFFICULTY        | Easy                                                             |
-| TECHNIQUES        | IDOR · FTP Credentials in PCAP · Linux Capabilities (cap_setuid) |
+<table width="100%">
+  <tr><th align="left">Campo</th><th align="left">Valor</th></tr>
+  <tr><td><b>TARGET IP</b></td><td>10.129.3.19</td></tr>
+  <tr><td><b>DOMAIN</b></td><td>cap.htb</td></tr>
+  <tr><td><b>OS</b></td><td>Linux</td></tr>
+  <tr><td><b>SERVICES</b></td><td>21/FTP · 22/SSH · 80/HTTP</td></tr>
+  <tr><td><b>DIFFICULTY</b></td><td>Easy</td></tr>
+  <tr><td><b>TECHNIQUES</b></td><td>IDOR · FTP Credentials in PCAP · Linux Capabilities (cap_setuid)</td></tr>
+</table>
 
-| Flag      | Hash                                                             |
-|:----------|:-----------------------------------------------------------------|
-| user.txt  | `aaf24ac79e5aec40014bc6cc47c80639`                               |
-| root.txt  | `43737038fe2d649a4b60fd02cef8449a`                               |
+<table width="100%">
+  <tr><th align="left">Flag</th><th align="left">Hash</th></tr>
+  <tr><td>user.txt</td><td><code>aaf24ac79e5aec40014bc6cc47c80639</code></td></tr>
+  <tr><td>root.txt</td><td><code>43737038fe2d649a4b60fd02cef8449a</code></td></tr>
+</table>
 
 ```
 root@cap:~# echo "pwned by Show@Hack4u~" >> /etc/motd
