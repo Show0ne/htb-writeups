@@ -9,7 +9,7 @@
 
 ---
 
-| | |
+| Campo | Valor |
 |:---|:---|
 | **TARGET IP**　| 10.129.3.19 |
 | **DOMAIN**　| cap.htb |
