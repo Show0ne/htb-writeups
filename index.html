@@ -29,6 +29,11 @@ overflow:auto;
 padding:20px;
 }
 
+.sidebar h3{
+border-bottom:1px solid #333;
+padding-bottom:5px;
+}
+
 .sidebar a{
 display:block;
 color:#9cdcfe;
@@ -45,7 +50,7 @@ text-decoration:underline;
 .search{
 width:100%;
 padding:8px;
-margin:10px 0 15px 0;
+margin-bottom:15px;
 font-size:14px;
 }
 
@@ -101,49 +106,38 @@ color:#aaa;
 margin-bottom:10px;
 }
 
-</style></head><body><div class="toggle" onclick="toggleTheme()">🌙 Theme</div><div class="layout"><div class="sidebar"><h2>HackTheBox Writeups</h2><div class="stats" id="stats"></div><input class="search" id="search" placeholder="Search machine"><b>Linux Machines</b>
-
-<div id="machines"></div></div><div class="content"><div id="viewer" class="viewer">
-<h1>HackTheBox Writeups</h1>
-<p>Select a machine from the sidebar.</p>
-</div></div></div><script>
+</style></head><body><div class="toggle" onclick="toggleTheme()">🌙 Theme</div><div class="layout"><div class="sidebar"><h2>HackTheBox Writeups</h2><div class="stats" id="stats"></div><input class="search" id="search" placeholder="Search machine"><h3>Linux</h3>
+<div id="linux"></div><h3>Windows</h3>
+<div id="windows"></div></div><div class="content"><div id="viewer" class="viewer"><h1>HackTheBox Writeups</h1><p>Collection of HackTheBox machine writeups.</p><p>Select a machine from the sidebar.</p></div></div></div><script>
 
 const repo="Show0ne/htb-writeups";
 
-const machines={};
+const writeups={};
 
-let linuxCount=0;
-let windowsCount=0;
-
-async function load(path){
+async function load(path,container){
 
 const url=`https://api.github.com/repos/${repo}/contents/${path}`;
-
 const response=await fetch(url);
-
-if(response.status!==200) return;
-
 const files=await response.json();
+
+const sidebar=document.getElementById(container);
 
 files
 .filter(f=>f.name.endsWith("_writeup.md"))
 .sort((a,b)=>a.name.localeCompare(b.name))
 .forEach(file=>{
 
-const name=file.name.replace("_writeup.md","");
+const id=file.name.replace("_writeup.md","");
 
-machines[name]=file.download_url;
+writeups[id]=file.download_url;
 
 const a=document.createElement("a");
 
-a.textContent=name;
+a.textContent=id;
 
-a.onclick=()=>loadMachine(name);
+a.onclick=()=>loadWriteup(id);
 
-document.getElementById("machines").appendChild(a);
-
-if(path.startsWith("Linux")) linuxCount++;
-if(path.startsWith("Windows")) windowsCount++;
+sidebar.appendChild(a);
 
 });
 
@@ -153,15 +147,16 @@ updateStats();
 
 function updateStats(){
 
-document.getElementById("stats").innerHTML =
-`Linux (${linuxCount})<br>Windows (${windowsCount})`;
+document.getElementById("stats").textContent =
+Object.keys(writeups).length+" writeups in archive";
 
 }
 
-async function loadMachine(name){
+async function loadWriteup(id){
 
-const raw=await fetch(machines[name]);
+location.hash="writeup/"+id;
 
+const raw=await fetch(writeups[id]);
 const md=await raw.text();
 
 document.getElementById("viewer").innerHTML =
@@ -227,15 +222,8 @@ document.body.classList.add("dark");
 
 }
 
-load("Linux/Easy");
-load("Linux/Medium");
-load("Linux/Hard");
-load("Linux/Insane");
-
-load("Windows/Easy");
-load("Windows/Medium");
-load("Windows/Hard");
-load("Windows/Insane");
+load("Linux/Easy","linux");
+load("Windows/Easy","windows");
 
 document.getElementById("search").addEventListener("input",function(){
 
