@@ -9,21 +9,19 @@
 
 ---
 
-| Campo        | Valor                                              |
-|--------------|----------------------------------------------------|
-| **TARGET IP**    | 10.129.3.19                                    |
-| **DOMAIN**       | cap.htb                                        |
-| **OS**           | Linux                                          |
-| **SERVICES**     | 21/FTP · 22/SSH · 80/HTTP                     |
-| **DIFFICULTY**   | Easy                                           |
-| **TECHNIQUES**   | IDOR · FTP Credentials in PCAP · Linux Capabilities (cap_setuid) |
+| | |
+|---|---|
+| **TARGET IP** | 10.129.3.19 |
+| **DOMAIN** | cap.htb |
+| **OS** | Linux |
+| **SERVICES** | 21/FTP · 22/SSH · 80/HTTP |
+| **DIFFICULTY** | Easy |
+| **TECHNIQUES** | IDOR · FTP Credentials in PCAP · Linux Capabilities (cap_setuid) |
 
----
-
-| Flag       | Hash                                   |
-|------------|----------------------------------------|
-| `user.txt` | `aaf24ac79e5aec40014bc6cc47c80639`     |
-| `root.txt` | `43737038fe2d649a4b60fd02cef8449a`     |
+| | |
+|---|---|
+| **user.txt** | `aaf24ac79e5aec40014bc6cc47c80639` |
+| **root.txt** | `43737038fe2d649a4b60fd02cef8449a` |
 
 ```
 root@cap:~# echo "pwned by Show@Hack4u~" >> /etc/motd
