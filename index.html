@@ -1,57 +1,186 @@
 <!DOCTYPE html>
-<html><head><meta charset='UTF-8'>
-<title>HTB Writeups</title>
-<style>
-body{font-family:Arial;margin:40px;transition:.3s}
-.dark{background:#0d1117;color:#e6edf3}
-.light{background:#fff;color:#000}
-a{text-decoration:none}
-.dark a{color:#58a6ff}
-.light a{color:#0969da}
-input{padding:8px;width:300px}
-button{margin-bottom:20px}
-.machine{margin-left:20px}
-</style>
-</head><body class='dark'>
-<h1>HackTheBox Writeups</h1>
-<button onclick='toggleTheme()'>Toggle Theme</button><br><br>
-<input id='search' placeholder='Search machine...' onkeyup='searchMachines()'><br><br>
-<h2>Linux (1)</h2><ul>
-<li>Easy (1)<ul>
-<li class='machine'><a href='Linux/Easy/cap_writeup.md'>cap</a></li>
-</ul></li>
-<li>Medium (0)<ul>
-</ul></li>
-<li>Hard (0)<ul>
-</ul></li>
-<li>Insane (0)<ul>
-</ul></li>
-</ul>
-<h2>Windows (0)</h2><ul>
-<li>Easy (0)<ul>
-</ul></li>
-<li>Medium (0)<ul>
-</ul></li>
-<li>Hard (0)<ul>
-</ul></li>
-<li>Insane (0)<ul>
-</ul></li>
-</ul>
-<script>
-function searchMachines(){
- let input=document.getElementById("search").value.toLowerCase();
- let machines=document.getElementsByClassName("machine");
+<html>
+<head>
+<meta charset="utf-8">
+<title>HackTheBox Writeups</title>
 
- for(let i=0;i<machines.length;i++){
-  let txt=machines[i].innerText.toLowerCase();
-  machines[i].style.display=txt.includes(input)?"":"none";
- }
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#f4f4f4;
+color:#111;
+}
+
+.dark{
+background:#121212;
+color:#ddd;
+}
+
+.layout{
+display:flex;
+height:100vh;
+}
+
+.sidebar{
+width:320px;
+background:#1e1e1e;
+color:white;
+overflow:auto;
+padding:20px;
+}
+
+.sidebar a{
+display:block;
+color:#9cdcfe;
+padding:3px 0;
+cursor:pointer;
+text-decoration:none;
+font-size:14px;
+}
+
+.sidebar a:hover{
+text-decoration:underline;
+}
+
+.search{
+width:100%;
+padding:8px;
+margin-bottom:10px;
+}
+
+.content{
+flex:1;
+overflow:auto;
+padding:40px;
+background:white;
+}
+
+.dark .content{
+background:#1a1a1a;
+}
+
+.toggle{
+position:fixed;
+top:15px;
+right:20px;
+background:#444;
+color:white;
+padding:6px 10px;
+border-radius:4px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="toggle" onclick="toggleTheme()">Theme</div>
+
+<div class="layout">
+
+<div class="sidebar">
+
+<h2>HTB Writeups</h2>
+
+<input class="search" id="search" placeholder="Search machine">
+
+<h3>Linux</h3>
+<div id="linux"></div>
+
+<h3>Windows</h3>
+<div id="windows"></div>
+
+</div>
+
+<div class="content">
+
+<div id="viewer">
+<h1>HackTheBox Writeups</h1>
+<p>Select a machine from the sidebar.</p>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const repo="Show0ne/htb-writeups";
+
+const machines={};
+
+async function load(path,container){
+
+const url=`https://api.github.com/repos/${repo}/contents/${path}`;
+
+const response=await fetch(url);
+
+const files=await response.json();
+
+const sidebar=document.getElementById(container);
+
+files
+.filter(f=>f.name.endsWith("_writeup.md"))
+.sort((a,b)=>a.name.localeCompare(b.name))
+.forEach(file=>{
+
+const id=file.name.replace("_writeup.md","");
+
+machines[id]=file.download_url;
+
+const a=document.createElement("a");
+
+a.textContent=id;
+
+a.onclick=()=>loadMachine(id);
+
+sidebar.appendChild(a);
+
+});
+
+}
+
+async function loadMachine(id){
+
+const raw=await fetch(machines[id]);
+
+const md=await raw.text();
+
+document.getElementById("viewer").innerHTML=marked.parse(md);
+
 }
 
 function toggleTheme(){
- let body=document.body;
- body.classList.toggle("dark");
- body.classList.toggle("light");
+
+document.body.classList.toggle("dark");
+
 }
+
+document.getElementById("search").addEventListener("input",function(){
+
+const filter=this.value.toLowerCase();
+
+document.querySelectorAll(".sidebar a").forEach(a=>{
+
+const text=a.textContent.toLowerCase();
+
+a.style.display=text.includes(filter)?"block":"none";
+
+});
+
+});
+
+load("Linux/Easy","linux");
+
+load("Windows/Easy","windows");
+
 </script>
-</body></html>
+
+</body>
+</html>
