@@ -3,25 +3,15 @@
 
 <head>
 <meta charset="utf-8">
-<title>HackTheBox Writeups</title>
+<title>HTB Writeups</title>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
 <style>
 
 body{
-font-family: Arial, sans-serif;
+font-family:Arial;
 margin:0;
-background:#f4f4f4;
-color:#111;
-}
-
-.dark{
 background:#121212;
 color:#ddd;
 }
@@ -34,14 +24,12 @@ height:100vh;
 .sidebar{
 width:350px;
 background:#1e1e1e;
-color:white;
-overflow:auto;
 padding:20px;
+overflow:auto;
 }
 
-.sidebar h3{
-border-bottom:1px solid #333;
-padding-bottom:5px;
+.sidebar h2{
+margin-top:0;
 }
 
 .sidebar a{
@@ -49,71 +37,42 @@ display:block;
 color:#9cdcfe;
 text-decoration:none;
 padding:3px 0;
-cursor:pointer;
 font-size:14px;
+cursor:pointer;
 }
 
 .sidebar a:hover{
 text-decoration:underline;
 }
 
+.section{
+margin-top:20px;
+border-top:1px solid #333;
+padding-top:10px;
+font-weight:bold;
+}
+
 .search{
 width:100%;
 padding:8px;
-margin-bottom:15px;
-font-size:14px;
+margin:10px 0;
 }
 
 .content{
 flex:1;
-overflow:auto;
 padding:40px;
-background:white;
-}
-
-.dark .content{
-background:#1a1a1a;
-}
-
-.viewer pre{
-background:#111;
-padding:12px;
 overflow:auto;
-}
-
-.toc{
-background:#f0f0f0;
-padding:15px;
-margin-bottom:25px;
-border-radius:5px;
-}
-
-.dark .toc{
-background:#222;
-}
-
-.toc a{
-display:block;
-text-decoration:none;
-color:#0366d6;
+background:#1a1a1a;
 }
 
 .toggle{
 position:fixed;
 top:15px;
 right:20px;
-padding:6px 10px;
 cursor:pointer;
 background:#444;
-color:white;
+padding:6px 10px;
 border-radius:4px;
-font-size:13px;
-}
-
-.stats{
-font-size:13px;
-color:#aaa;
-margin-bottom:10px;
 }
 
 </style>
@@ -122,7 +81,7 @@ margin-bottom:10px;
 
 <body>
 
-<div class="toggle" onclick="toggleTheme()">🌙 Theme</div>
+<div class="toggle" onclick="toggleTheme()">Theme</div>
 
 <div class="layout">
 
@@ -130,21 +89,19 @@ margin-bottom:10px;
 
 <h2>HTB Writeups</h2>
 
-<div class="stats" id="stats"></div>
+<div id="stats"></div>
 
 <input class="search" id="search" placeholder="Search machine">
 
-<h3>Linux</h3>
-<div id="linux"></div>
+<div class="section">Linux Machines</div>
 
-<h3>Windows</h3>
-<div id="windows"></div>
+<div id="machines"></div>
 
 </div>
 
 <div class="content">
 
-<div id="viewer" class="viewer">
+<div id="viewer">
 <h1>HackTheBox Writeups</h1>
 <p>Select a machine from the sidebar.</p>
 </div>
@@ -157,75 +114,81 @@ margin-bottom:10px;
 
 const repo="Show0ne/htb-writeups";
 
-const difficulties=["Easy","Medium","Hard","Insane"];
-
 const machines={};
 
-async function load(path,container){
+let linuxCount=0;
+let windowsCount=0;
 
-const url=`https://api.github.com/repos/${repo}/contents/${path}`;
+async function loadMachines(){
+
+const dirs=[
+"Linux/Easy","Linux/Medium","Linux/Hard","Linux/Insane",
+"Windows/Easy","Windows/Medium","Windows/Hard","Windows/Insane"
+];
+
+for(const dir of dirs){
+
+try{
+
+const url=`https://api.github.com/repos/${repo}/contents/${dir}`;
 
 const response=await fetch(url);
 
-if(response.status!==200) return;
+if(response.status!==200) continue;
 
 const files=await response.json();
 
-const sidebar=document.getElementById(container);
-
-const title=document.createElement("div");
-title.style.fontWeight="bold";
-title.style.marginTop="5px";
-title.textContent=path.split("/")[1];
-
-sidebar.appendChild(title);
-
 files
 .filter(f=>f.name.endsWith("_writeup.md"))
-.sort((a,b)=>a.name.localeCompare(b.name))
 .forEach(file=>{
 
-const id=file.name.replace("_writeup.md","");
+const name=file.name.replace("_writeup.md","");
 
-machines[id]=file.download_url;
+machines[name]=file.download_url;
 
 const a=document.createElement("a");
 
-a.textContent=id;
+a.textContent=name;
 
-a.onclick=()=>loadMachine(id);
+a.onclick=()=>loadMachine(name);
 
-sidebar.appendChild(a);
+document.getElementById("machines").appendChild(a);
+
+if(dir.startsWith("Linux")) linuxCount++;
+else windowsCount++;
 
 });
+
+}catch(e){}
 
 }
 
-async function loadMachine(id){
+document.getElementById("stats").innerHTML=
+`Linux (${linuxCount})<br>Windows (${windowsCount})`;
 
-const raw=await fetch(machines[id]);
+}
+
+async function loadMachine(name){
+
+const raw=await fetch(machines[name]);
 
 const md=await raw.text();
 
-const html=marked.parse(md);
-
-document.getElementById("viewer").innerHTML=html;
-
-document.querySelectorAll("pre code").forEach(el=>{
-hljs.highlightElement(el);
-});
+document.getElementById("viewer").innerHTML=marked.parse(md);
 
 }
 
 function toggleTheme(){
-document.body.classList.toggle("dark");
+
+document.body.classList.toggle("light");
+
 }
 
 document.getElementById("search").addEventListener("input",function(){
 
 const filter=this.value.toLowerCase();
 
-document.querySelectorAll(".sidebar a").forEach(a=>{
+document.querySelectorAll("#machines a").forEach(a=>{
 
 const text=a.textContent.toLowerCase();
 
@@ -235,10 +198,7 @@ a.style.display=text.includes(filter)?"block":"none";
 
 });
 
-difficulties.forEach(d=>{
-load(`Linux/${d}`,"linux");
-load(`Windows/${d}`,"windows");
-});
+loadMachines();
 
 </script>
 
